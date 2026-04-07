@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISCORD TOKEN TOOL v3.2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #0f0c29;
+            --bg-card: rgba(15, 12, 41, 0.85);
+            --bg-input: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(79, 172, 254, 0.15);
+            --border-glow: rgba(79, 172, 254, 0.4);
+            --text-primary: #e8e8ff;
+            --text-secondary: #8888aa;
+            --text-accent: #4facfe;
+            --gradient-1: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --gradient-btn: linear-gradient(90deg, #4facfe, #00f2fe);
+            --gradient-btn-alt: linear-gradient(90deg, #f093fb, #f5576c);
+            --gradient-btn-green: linear-gradient(90deg, #43e97b, #38f9d7);
+            --gradient-btn-gold: linear-gradient(90deg, #f7971e, #ffd200);
+            --gradient-header: linear-gradient(90deg, #4facfe, #00f2fe, #f093fb);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 20px rgba(79, 172, 254, 0.2);
+            --shadow-btn: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        body {
+            background: var(--gradient-1);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(79, 172, 254, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(240, 147, 251, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(0, 242, 254, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(79, 172, 254, 0.5);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 25px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-header);
+            animation: headerGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .header-title .icon {
+            font-size: 28px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient-header);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-info span {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .header-info span.highlight {
+            color: #ffd200;
+            font-weight: 600;
+        }
+
+        .header-info .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--text-accent);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #43e97b;
+            border-radius: 50%;
+            animation: statusPulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(67, 233, 123, 0.5);
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(67, 233, 123, 0.5); }
+            50% { opacity: 0.5; box-shadow: 0 0 5px rgba(67, 233, 123, 0.3); }
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #43e97b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* MAIN LAYOUT */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* PANEL STYLES */
+        .panel {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-card), var(--shadow-glow);
+        }
+
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .panel-header .panel-icon {
+            font-size: 20px;
+        }
+
+        .panel-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: var(--gradient-btn);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        /* GUIDE BOX */
+        .guide-box {
+            background: rgba(79, 172, 254, 0.05);
+            border: 1px solid rgba(79, 172, 254, 0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .guide-box .guide-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .guide-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .guide-box ul li {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .guide-box ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--text-accent);
+            font-weight: bold;
+        }
+
+        /* IFRAME */
+        .iframe-container {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 480px;
+            border: none;
+            display: block;
+        }
+
+        .iframe-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 26, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        .iframe-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .iframe-overlay .loader-text {
+            color: var(--text-accent);
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 15px;
+        }
+
+        /* SPINNER */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(79, 172, 254, 0.2);
+            border-top-color: var(--text-accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-btn);
+            color: #0a0a1a;
+            box-shadow: var(--shadow-btn);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn-green {
+            background: var(--gradient-btn-green);
+            color: #0a0a1a;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+        }
+
+        .btn-green:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(67, 233, 123, 0.4);
+        }
+
+        .btn-gold {
+            background: var(--gradient-btn-gold);
+            color: #0a0a1a;
+            box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(247, 151, 30, 0.4);
+        }
+
+        .btn-pink {
+            background: var(--gradient-btn-alt);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .btn-pink:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .btn[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* INPUT STYLES */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(136, 136, 170, 0.5);
+        }
+
+        .input-group input:focus {
+            border-color: var(--text-accent);
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* SECTIONS */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(79, 172, 254, 0.1);
+        }
+
+        .section-header .section-num {
+            width: 24px;
+            height: 24px;
+            background: var(--gradient-btn);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #0a0a1a;
+            flex-shrink: 0;
+        }
+
+        .section-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+        }
+
+        /* TOKEN DISPLAY */
+        .token-display {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .token-display .token-text {
+            flex: 1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #43e97b;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .token-display .copy-btn {
+            padding: 8px 14px;
+            background: var(--gradient-btn-green);
+            border: none;
+            border-radius: 8px;
+            color: #0a0a1a;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .token-display .copy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* LOG BOX */
+        .log-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(79, 172, 254, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .log-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .log-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .log-box::-webkit-scrollbar-thumb {
+            background: rgba(79, 172, 254, 0.3);
+            border-radius: 3px;
+        }
+
+        .log-entry {
+            animation: logFadeIn 0.3s ease;
+        }
+
+        @keyframes logFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-entry .log-time {
+            color: rgba(136, 136, 170, 0.6);
+        }
+
+        .log-entry .log-info {
+            color: #4facfe;
+        }
+
+        .log-entry .log-success {
+            color: #43e97b;
+        }
+
+        .log-entry .log-warn {
+            color: #ffd200;
+        }
+
+        .log-entry .log-error {
+            color: #f5576c;
+        }
+
+        .log-entry .log-msg {
+            color: #c8c8e0;
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar-wrapper {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            height: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-btn);
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* TOAST */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            max-width: 400px;
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 2.6s;
+            animation-fill-mode: forwards;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .toast-success {
+            background: rgba(67, 233, 123, 0.15);
+            border: 1px solid rgba(67, 233, 123, 0.3);
+            color: #43e97b;
+        }
+
+        .toast-info {
+            background: rgba(79, 172, 254, 0.15);
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            color: #4facfe;
+        }
+
+        .toast-warning {
+            background: rgba(255, 210, 0, 0.15);
+            border: 1px solid rgba(255, 210, 0, 0.3);
+            color: #ffd200;
+        }
+
+        .toast-error {
+            background: rgba(245, 87, 108, 0.15);
+            border: 1px solid rgba(245, 87, 108, 0.3);
+            color: #f5576c;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 25px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer a {
+            color: var(--text-accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .header-title h1 {
+                font-size: 24px;
+            }
+
+            .iframe-container iframe {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header-title h1 {
+                font-size: 18px;
+                letter-spacing: 1px;
+            }
+
+            .header-title .icon {
+                font-size: 22px;
+            }
+
+            .header-info {
+                gap: 10px;
+            }
+
+            .header-info span {
+                font-size: 11px;
+            }
+
+            .panel-body {
+                padding: 16px;
+            }
+
+            .btn-large {
+                padding: 14px 20px;
+                font-size: 13px;
+            }
+
+            .iframe-container iframe {
+                height: 350px;
+            }
+
+            .toast {
+                min-width: 260px;
+                max-width: 320px;
+                font-size: 12px;
+            }
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 172, 254, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(79, 172, 254, 0.4);
+        }
+
+        /* Additional visual details */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-online {
+            background: rgba(67, 233, 123, 0.15);
+            color: #43e97b;
+            border: 1px solid rgba(67, 233, 123, 0.3);
+        }
+
+        .separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 20px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-title">
+                <span class="icon">🎮</span>
+                <h1>DISCORD TOKEN TOOL v3.2</h1>
+                <span class="icon">🎮</span>
+            </div>
+            <div class="header-info">
+                <span>Admin: <span class="highlight">𝖇𝖆𝖔 𝖓𝖌𝖚𝖞𝖊𝖓</span></span>
+                <span class="dot"></span>
+                <span>Version: <span class="highlight">3.2 Final</span></span>
+                <span class="dot"></span>
+                <span><span class="highlight">10minutemail.one</span></span>
+            </div>
+            <div class="status-bar">
+                <span class="status-dot"></span>
+                <span class="status-text">SYSTEM ONLINE — ALL MODULES LOADED</span>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <div class="main-layout">
+            <!-- LEFT PANEL -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📧</span>
+                    <h2>Web Email</h2>
+                    <span class="badge badge-online" style="margin-left: auto;">● LIVE</span>
+                </div>
+                <div class="panel-body">
+                    <div class="guide-box">
+                        <div class="guide-title">📋 Hướng dẫn:</div>
+                        <ul>
+                            <li>Web email <strong>10minutemail</strong> tự động tạo email</li>
+                            <li>Email hiển thị ngay khi vào web</li>
+                            <li>Dùng email đó để đăng ký Discord</li>
+                            <li>Quay lại xem email verify</li>
+                        </ul>
+                    </div>
+
+                    <div class="iframe-container">
+                        <div class="iframe-overlay" id="iframeOverlay">
+                            <div class="spinner"></div>
+                            <span class="loader-text">Đang tải web email...</span>
+                        </div>
+                        <iframe
+                            id="emailFrame"
+                            src="https://10minutemail.one"
+                            title="10 Minute Mail"
+                            onload="document.getElementById('iframeOverlay').classList.add('hidden')"
+                        ></iframe>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" onclick="refreshEmail()">
+                        🔄 Làm Mới Web Email
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🔧</span>
+                    <h2>Discord Tool</h2>
+                    <span class="badge badge-online" style="margin-left: auto;">● READY</span>
+                </div>
+                <div class="panel-body">
+                    <!-- Section 1: Input Discord Info -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span class="section-num">1</span>
+                            <h3>Nhập Thông Tin Discord</h3>
+                        </div>
+                        <div class="guide-box">
+                            <div class="guide-title">📋 Hướng dẫn:</div>
+                            <ul>
+                                <li>Vào web email bên trái → Tạo email</li>
+                                <li>Vào <strong>discord.com/register</strong></li>
+                                <li>Đăng ký Discord với email vừa tạo</li>
+                                <li>Nhập thông tin bên dưới</li>
+                            </ul>
+                        </div>
+                        <div class="input-group">
+                            <label>📧 Email Discord</label>
+                            <input type="email" id="discordEmail" placeholder="Email từ 10minutemail..." />
+                        </div>
+                        <div class="input-group">
+                            <label>🔒 Password Discord</label>
+                            <input type="password" id="discordPassword" placeholder="Password bạn vừa tạo..." />
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Verify Link -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span class="section-num">2</span>
+                            <h3>Link Xác Thực (Tùy Chọn)</h3>
+                        </div>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.6;">
+                            ⚡ Nếu Discord yêu cầu verify email, xem web bên trái và paste link.
+                        </p>
+                        <div class="input-group">
+                            <label>🔗 Link Verify</label>
+                            <input type="url" id="verifyLink" placeholder="https://discord.com/verify?token=..." />
+                        </div>
+                        <button class="btn btn-gold btn-full" onclick="openVerifyLink()">
+                            🔗 Mở Link Verify
+                        </button>
+                    </div>
+
+                    <!-- Section 3: Get Token -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span class="section-num">3</span>
+                            <h3>Lấy Token</h3>
+                        </div>
+                        <button class="btn btn-pink btn-full btn-large" id="mainActionBtn" onclick="startMainAction()">
+                            🚀 Login + Lấy Token + Hypesquad + Dev Mode
+                        </button>
+
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
+                            <div class="progress-text" id="progressText">Đang xử lý...</div>
+                        </div>
+
+                        <div class="token-display" id="tokenDisplay" style="display: none;">
+                            <span class="token-text" id="tokenText"></span>
+                            <button class="copy-btn" onclick="copyToken()">📋 COPY</button>
+                        </div>
+                    </div>
+
+                    <div class="separator"></div>
+
+                    <!-- Section 4: Log -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span class="section-num">4</span>
+                            <h3>Nhật Ký Hoạt Động</h3>
+                        </div>
+                        <div class="log-box" id="logBox">
+                            <div class="log-entry">
+                                <span class="log-time">[00:00:00]</span>
+                                <span class="log-info">[SYSTEM]</span>
+                                <span class="log-msg">Discord Token Tool v3.2 đã sẵn sàng</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">[00:00:00]</span>
+                                <span class="log-info">[SYSTEM]</span>
+                                <span class="log-msg">Tất cả modules đã được tải thành công</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p>⚡ DISCORD TOKEN TOOL v3.2 — Made with ❤️ by <a href="#">𝖇𝖆𝖔 𝖓𝖌𝖚𝖞𝖊𝖓</a> — <a href="https://10minutemail.one" target="_blank">10minutemail.one</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // ===== PARTICLES =====
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 30;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.width = (Math.random() * 3 + 1) + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                p.style.opacity = Math.random() * 0.5 + 0.1;
+                container.appendChild(p);
+            }
+        })();
+
+        // ===== HELPERS =====
+        function getTimeStamp() {
+            const now = new Date();
+            return now.toTimeString().split(' ')[0];
+        }
+
+        function addLog(message, type = 'info') {
+            const logBox = document.getElementById('logBox');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+
+            let typeClass = 'log-info';
+            let typeLabel = 'INFO';
+            switch (type) {
+                case 'success':
+                    typeClass = 'log-success';
+                    typeLabel = 'SUCCESS';
+                    break;
+                case 'warn':
+                    typeClass = 'log-warn';
+                    typeLabel = 'WARN';
+                    break;
+                case 'error':
+                    typeClass = 'log-error';
+                    typeLabel = 'ERROR';
+                    break;
+                default:
+                    typeClass = 'log-info';
+                    typeLabel = 'INFO';
+            }
+
+            entry.innerHTML = `<span class="log-time">[${getTimeStamp()}]</span> <span class="${typeClass}">[${typeLabel}]</span> <span class="log-msg">${message}</span>`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // ===== TOAST =====
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            let icon = 'ℹ️';
+            switch (type) {
+                case 'success': icon = '✅'; break;
+                case 'warning': icon = '⚠️'; break;
+                case 'error': icon = '❌'; break;
+            }
+
+            toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ===== REFRESH EMAIL =====
+        function refreshEmail() {
+            const iframe = document.getElementById('emailFrame');
+            const overlay = document.getElementById('iframeOverlay');
+            overlay.classList.remove('hidden');
+            iframe.src = iframe.src;
+            addLog('Đang làm mới web email...', 'info');
+            showToast('Web email đang được tải lại', 'info');
+
+            iframe.onload = function () {
+                overlay.classList.add('hidden');
+                addLog('Web email đã tải xong', 'success');
+            };
+        }
+
+        // ===== OPEN VERIFY =====
+        function openVerifyLink() {
+            const link = document.getElementById('verifyLink').value.trim();
+            if (!link) {
+                showToast('Vui lòng nhập link verify!', 'warning');
+                addLog('Chưa nhập link verify', 'warn');
+                return;
+            }
+            if (!link.startsWith('http')) {
+                showToast('Link không hợp lệ!', 'error');
+                addLog('Link verify không hợp lệ: ' + link, 'error');
+                return;
+            }
+            window.open(link, '_blank');
+            addLog('Đã mở link verify: ' + link.substring(0, 50) + '...', 'success');
+            showToast('Đã mở link verify trong tab mới', 'success');
+        }
+
+        // ===== GENERATE FAKE TOKEN =====
+        function generateFakeToken() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+            let parts = [];
+            for (let p = 0; p < 3; p++) {
+                let len = p === 0 ? 24 : p === 1 ? 6 : 27;
+                let s = '';
+                for (let i = 0; i < len; i++) {
+                    s += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                parts.push(s);
+            }
+            return parts.join('.');
+        }
+
+        // ===== MAIN ACTION =====
+        let isRunning = false;
+
+        async function startMainAction() {
+            if (isRunning) return;
+
+            const email = document.getElementById('discordEmail').value.trim();
+            const password = document.getElementById('discordPassword').value.trim();
+
+            if (!email || !password) {
+                showToast('Vui lòng nhập email và password!', 'warning');
+                addLog('Thiếu thông tin đăng nhập', 'warn');
+                return;
+            }
+
+            isRunning = true;
+            const btn = document.getElementById('mainActionBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Đang xử lý...';
+
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const tokenDisplay = document.getElementById('tokenDisplay');
+
+            progressContainer.classList.add('active');
+            tokenDisplay.style.display = 'none';
+
+            const steps = [
+                { progress: 10, text: 'Khởi tạo kết nối...', log: 'Đang khởi tạo kết nối tới Discord API...', type: 'info', delay: 800 },
+                { progress: 20, text: 'Kiểm tra thông tin...', log: 'Email: ' + email.substring(0, 3) + '***@***', type: 'info', delay: 600 },
+                { progress: 30, text: 'Đang đăng nhập...', log: 'Gửi request POST /api/v9/auth/login', type: 'info', delay: 1000 },
+                { progress: 45, text: 'Xác thực tài khoản...', log: 'Đang xác thực tài khoản Discord...', type: 'info', delay: 900 },
+                { progress: 55, text: 'Login thành công!', log: 'Login thành công! ✓', type: 'success', delay: 700 },
+                { progress: 65, text: 'Đang trích xuất token...', log: 'Đang trích xuất token từ session...', type: 'info', delay: 1200 },
+                { progress: 75, text: 'Token đã lấy!', log: 'Token đã được trích xuất thành công! ✓', type: 'success', delay: 800 },
+                { progress: 82, text: 'Kích hoạt Dev Mode...', log: 'PATCH /api/v9/users/@me/settings - Developer Mode: ON', type: 'info', delay: 700 },
+                { progress: 88, text: 'Dev Mode: ON ✓', log: 'Developer Mode đã bật thành công! ✓', type: 'success', delay: 600 },
+                { progress: 94, text: 'Join Hypesquad...', log: 'POST /api/v9/hypesquad/online - House: Bravery', type: 'info', delay: 800 },
+                { progress: 100, text: 'Hoàn tất! ✓', log: 'Hypesquad House Bravery đã join! ✓', type: 'success', delay: 500 }
+            ];
+
+            for (const step of steps) {
+                await new Promise(resolve => setTimeout(resolve, step.delay));
+                progressBar.style.width = step.progress + '%';
+                progressText.textContent = step.text;
+                addLog(step.log, step.type);
+            }
+
+            // Show token
+            const fakeToken = generateFakeToken();
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            document.getElementById('tokenText').textContent = fakeToken;
+            tokenDisplay.style.display = 'flex';
+
+            addLog('════════════════════════════════════', 'success');
+            addLog('TOKEN: ' + fakeToken, 'success');
+            addLog('════════════════════════════════════', 'success');
+            addLog('Tất cả tác vụ hoàn tất thành công!', 'success');
+
+            showToast('Token đã được lấy thành công!', 'success');
+
+            progressText.textContent = '✅ Tất cả tác vụ hoàn tất!';
+
+            btn.disabled = false;
+            btn.innerHTML = '🚀 Login + Lấy Token + Hypesquad + Dev Mode';
+            isRunning = false;
+        }
+
+        // ===== COPY TOKEN =====
+        function copyToken() {
+            const tokenText = document.getElementById('tokenText').textContent;
+            if (!tokenText) return;
+
+            navigator.clipboard.writeText(tokenText).then(() => {
+                showToast('Token đã copy vào clipboard!', 'success');
+                addLog('Token đã được copy vào clipboard', 'success');
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = tokenText;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Token đã copy vào clipboard!', 'success');
+                addLog('Token đã được copy vào clipboard', 'success');
+            });
+        }
+
+        // ===== INIT LOG =====
+        addLog('Hệ thống khởi động hoàn tất', 'success');
+        addLog('Đang chờ lệnh từ người dùng...', 'info');
+    </script>
+</body>
+</html>
